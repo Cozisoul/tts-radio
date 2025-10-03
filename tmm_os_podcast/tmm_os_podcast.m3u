@@ -1,0 +1,35 @@
+#EXTM3U
+#EXTINF:0,TMM-OS Podcast - Complete
+tmm_os_podcast_complete.wav
+
+# Individual segments:
+#EXTINF:30,Dave - Segment 1
+segment_01_dave.wav
+#EXTINF:45,Jo - Segment 2
+segment_02_jo.wav
+#EXTINF:50,Alex - Segment 3
+segment_03_alex.wav
+#EXTINF:45,Sarah - Segment 4
+segment_04_sarah.wav
+#EXTINF:50,Mike - Segment 5
+segment_05_mike.wav
+#EXTINF:45,Dave - Segment 6
+segment_06_dave.wav
+#EXTINF:40,Jo - Segment 7
+segment_07_jo.wav
+#EXTINF:45,Alex - Segment 8
+segment_08_alex.wav
+#EXTINF:40,Sarah - Segment 9
+segment_09_sarah.wav
+#EXTINF:45,Mike - Segment 10
+segment_10_mike.wav
+#EXTINF:40,Dave - Segment 11
+segment_11_dave.wav
+#EXTINF:45,Jo - Segment 12
+segment_12_jo.wav
+#EXTINF:40,Alex - Segment 13
+segment_13_alex.wav
+#EXTINF:35,Sarah - Segment 14
+segment_14_sarah.wav
+#EXTINF:30,Mike - Segment 15
+segment_15_mike.wav
