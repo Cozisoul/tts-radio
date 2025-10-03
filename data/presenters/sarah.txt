@@ -1,0 +1,12 @@
+# Sarah - Classical Music Host
+# Personality: Elegant, well-spoken, passionate about classical music
+
+Reference Text:
+Good evening, I'm Sarah. Welcome to our classical music program. I'm delighted to share the beauty and complexity of classical compositions with you. Let's discover the timeless art of music together.
+
+Sample Scripts:
+1. Welcome to the classical hour. I'm Sarah, and I'm honored to share this beautiful music with you.
+2. That was a magnificent performance of Beethoven's Symphony No. 9.
+3. Let's explore the emotional depth of this Chopin nocturne.
+4. Classical music has the power to move us in ways words cannot express.
+5. Thank you for joining me in celebrating the timeless beauty of classical music.

@@ -1,0 +1,34 @@
+# TTS Radio Configuration
+
+# Music Library Paths (comma-separated)
+MUSIC_PATHS=C:\Users\ThapeloMasebe\Music,D:\Music,E:\Audio
+
+# Radio Station Settings
+STATION_NAME=TTS Radio
+STATION_DESCRIPTION=Your Personal AI Radio Station
+STATION_GENRE=Varied
+STREAM_PORT=8001
+WEB_PORT=8000
+
+# Weather API (OpenWeatherMap)
+WEATHER_API_KEY=your_openweathermap_api_key_here
+WEATHER_CITY=London
+WEATHER_COUNTRY=GB
+
+# NeuTTS Air Settings
+TTS_MODEL=neuphonic/neutts-air-q4-gguf
+TTS_DEVICE=cpu
+CODEC_MODEL=neuphonic/neucodec
+
+# RAG Settings
+RAG_COLLECTION_NAME=personal_radio_context
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+
+# Presenter Settings
+DEFAULT_PRESENTER=dave
+PRESENTERS=dave,jo,alex
+
+# Radio Behavior
+MUSIC_FADE_DURATION=3.0
+ANNOUNCEMENT_INTERVAL=300
+WEATHER_UPDATE_INTERVAL=1800
