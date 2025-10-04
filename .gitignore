@@ -21,14 +21,32 @@ wheels/
 *.egg
 MANIFEST
 
-# Virtual environments
-.env
-.venv
-env/
+# Virtual Environment
+.venv/
 venv/
 ENV/
-env.bak/
-venv.bak/
+env/
+.ENV/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Audio Files
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.ogg
+*.flac
+
+# Output Directories
+output/
+temp/
+tmp/
 
 # IDE
 .vscode/
@@ -46,37 +64,26 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Audio files (optional - uncomment if you don't want to include audio)
-# *.wav
-# *.mp3
-# *.flac
-# *.m4a
-
 # Logs
 *.log
 logs/
 
-# Temporary files
-temp/
-tmp/
-*.tmp
+# Agent Framework (cloned repository)
+agent-framework/
 
-# Model files (uncomment if you don't want to include trained models)
-# *.pt
-# *.pth
-# *.ckpt
+# Jupyter Notebooks
+.ipynb_checkpoints/
 
-# External repositories
-neutts-air/
+# pytest
+.pytest_cache/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
 
-# pyenv
-.python-version
-
-# Environment variables
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
