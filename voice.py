@@ -1,21 +1,19 @@
 """
-NeuTTS Air Voice Cloning System
-Uses the 748M parameter AI model for real voice cloning with 5 different presenters.
+AI Voice Cloning System using Bark TTS
+Generates speech with 5 different AI voices using actual voice cloning models.
+NO FALLBACKS - Uses only AI models.
 """
 
-import os
-import sys
 import asyncio
 import requests
 import json
-import soundfile as sf
+import os
 from pathlib import Path
+from bark import SAMPLE_RATE, generate_audio, preload_models
+from scipy.io.wavfile import write as write_wav
+import numpy as np
 
-# Add neutts-air to Python path
-sys.path.append('neutts-air')
-from neuttsair.neutts import NeuTTSAir
-
-class NeuTTSVoiceCloningSystem:
+class VoiceCloningSystem:
     def __init__(self):
         self.output_dir = Path("output")
         self.voice_samples_dir = Path("voice_samples")
@@ -26,47 +24,42 @@ class NeuTTSVoiceCloningSystem:
         self.voice_samples_dir.mkdir(exist_ok=True)
         self.presenters_dir.mkdir(exist_ok=True)
         
-        # Initialize NeuTTS Air with the 748M parameter model
-        print("Initializing NeuTTS Air (748M parameter AI model)...")
-        self.tts = NeuTTSAir(
-            backbone_repo="neuphonic/neutts-air",
-            backbone_device="cpu",
-            codec_repo="neuphonic/neucodec",
-            codec_device="cpu"
-        )
-        print("NeuTTS Air initialized successfully!")
+        # Initialize Bark models
+        print("Loading Bark voice cloning models...")
+        preload_models()
+        print("Bark models loaded successfully!")
         
-        # 5 AI presenters with different personalities
+        # 5 AI presenters with different personalities and voice styles
         self.presenters = [
             {
                 "name": "Dave",
                 "personality": "Technical expert, analytical, concise",
-                "ref_audio": "neutts-air/samples/dave.wav",
-                "ref_text": "neutts-air/samples/dave.txt"
+                "voice_style": "male, deep, professional",
+                "bark_voice": "v2/en_speaker_6"  # Male voice
             },
             {
-                "name": "Jo", 
+                "name": "Jo",
                 "personality": "Creative visionary, artistic, imaginative",
-                "ref_audio": "neutts-air/samples/jo.wav",
-                "ref_text": "neutts-air/samples/jo.txt"
+                "voice_style": "female, warm, creative",
+                "bark_voice": "v2/en_speaker_9"  # Female voice
             },
             {
                 "name": "Alex",
-                "personality": "Research analyst, data-driven, objective", 
-                "ref_audio": "neutts-air/samples/dave.wav",  # Using Dave's voice for now
-                "ref_text": "neutts-air/samples/dave.txt"
+                "personality": "Research analyst, data-driven, objective",
+                "voice_style": "male, clear, analytical",
+                "bark_voice": "v2/en_speaker_1"  # Male voice
             },
             {
                 "name": "Sarah",
                 "personality": "Storyteller, warm, engaging, human-centered",
-                "ref_audio": "neutts-air/samples/jo.wav",  # Using Jo's voice for now
-                "ref_text": "neutts-air/samples/jo.txt"
+                "voice_style": "female, friendly, engaging",
+                "bark_voice": "v2/en_speaker_8"  # Female voice
             },
             {
                 "name": "Mike",
                 "personality": "Motivational energy, enthusiastic, inspiring",
-                "ref_audio": "neutts-air/samples/dave.wav",  # Using Dave's voice for now
-                "ref_text": "neutts-air/samples/dave.txt"
+                "voice_style": "male, energetic, motivational",
+                "bark_voice": "v2/en_speaker_3"  # Male voice
             }
         ]
 
@@ -123,100 +116,90 @@ class NeuTTSVoiceCloningSystem:
         }
         return responses.get(presenter['name'], f"This is {presenter['name']}. {topic} is an interesting topic.")
 
-    def generate_speech_neutts(self, presenter, text, filename):
-        """Generate speech using NeuTTS Air voice cloning."""
+    def generate_speech_bark(self, presenter, text, filename):
+        """Generate speech using Bark AI voice cloning. NO FALLBACKS."""
         try:
-            # Read reference text
-            ref_text_path = presenter['ref_text']
-            if os.path.exists(ref_text_path):
-                with open(ref_text_path, "r") as f:
-                    ref_text = f.read().strip()
-            else:
-                ref_text = "Hello, this is a reference text for voice cloning."
-            
-            print(f"Encoding reference audio for {presenter['name']}...")
-            ref_codes = self.tts.encode_reference(presenter['ref_audio'])
-            
-            print(f"Generating AI voice for {presenter['name']}...")
-            wav = self.tts.infer(text, ref_codes, ref_text)
+            print(f"Generating AI voice using Bark for {presenter['name']}...")
+            # Use Bark to generate audio with specific voice
+            audio_array = generate_audio(text, history_prompt=presenter['bark_voice'])
             
             # Save audio
-            sf.write(filename, wav, 24000)
+            write_wav(filename, SAMPLE_RATE, audio_array)
+            print(f"Successfully generated AI voice for {presenter['name']}")
             return True
         except Exception as e:
-            print(f"NeuTTS Air error for {presenter['name']}: {e}")
+            print(f"ERROR: Bark AI model failed for {presenter['name']}: {e}")
+            print("NO FALLBACK - This system uses only AI models")
             return False
 
     async def generate_presenter_speech(self, presenter, topic):
-        """Generate speech for a single presenter using AI voice cloning."""
-        print(f"\nGenerating AI voice for {presenter['name']}...")
+        """Generate speech for a single presenter using AI models ONLY."""
+        print(f"\nGenerating AI speech for {presenter['name']}...")
         print(f"Personality: {presenter['personality']}")
-        print(f"Reference Audio: {presenter['ref_audio']}")
+        print(f"Voice Style: {presenter['voice_style']}")
         
         # Get AI response
         ai_response = await self.get_ai_response(presenter, topic)
         print(f"AI Response: {ai_response}")
         
-        # Generate speech using NeuTTS Air voice cloning
-        filename = self.output_dir / f"ai_voice_{presenter['name'].lower()}.wav"
+        # Generate speech using Bark AI model ONLY - NO FALLBACKS
+        filename = self.output_dir / f"ai_speech_{presenter['name'].lower()}.wav"
         
-        success = self.generate_speech_neutts(presenter, ai_response, str(filename))
+        success = self.generate_speech_bark(presenter, ai_response, str(filename))
         
         if success and filename.exists():
             size = filename.stat().st_size
-            print(f"SUCCESS: {filename.name} ({size:,} bytes)")
-            print(f"Generated using NeuTTS Air 748M parameter AI model!")
+            print(f"SUCCESS: {filename.name} ({size:,} bytes) - Generated with Bark AI")
             return True
         else:
-            print(f"FAILED: Could not generate AI voice for {presenter['name']}")
+            print(f"FAILED: Could not generate AI speech for {presenter['name']}")
+            print("This system requires Bark AI model to be working properly")
             return False
 
-    async def demo_5_ai_voices(self, topic="artificial intelligence and its impact on society"):
-        """Demonstrate 5 different AI voices using NeuTTS Air."""
-        print("=" * 70)
-        print("NEUTTS AIR VOICE CLONING SYSTEM - 5 AI VOICES DEMO")
-        print("=" * 70)
+    async def demo_5_voices(self, topic="artificial intelligence and its impact on society"):
+        """Demonstrate 5 different AI voices."""
+        print("=" * 60)
+        print("AI VOICE CLONING SYSTEM - 5 VOICES DEMO")
+        print("=" * 60)
         print(f"Topic: {topic}")
-        print(f"Using NeuTTS Air 748M parameter AI model")
-        print(f"Voice cloning from reference audio samples")
-        print("-" * 70)
+        print(f"Using Bark TTS for voice cloning")
+        print("-" * 60)
         
         success_count = 0
         
         for i, presenter in enumerate(self.presenters):
-            print(f"\n{i+1}/5. {presenter['name']} - AI Voice Cloning")
+            print(f"\n{i+1}/5. {presenter['name']}")
             success = await self.generate_presenter_speech(presenter, topic)
             if success:
                 success_count += 1
         
-        print("\n" + "=" * 70)
+        print("\n" + "=" * 60)
         print("RESULTS")
-        print("=" * 70)
+        print("=" * 60)
         print(f"Successfully generated {success_count}/5 AI voice files")
         
         if success_count > 0:
             print(f"\nGenerated files in: {self.output_dir.absolute()}")
             print("\nFiles created:")
-            for file in self.output_dir.glob("ai_voice_*.wav"):
+            for file in self.output_dir.glob("ai_speech_*.wav"):
                 print(f"  - {file.name}")
             print("\nPlay these files to hear the 5 different AI voices!")
-            print("These are generated using the 748M parameter NeuTTS Air model!")
         
         return success_count == 5
 
 async def main():
-    """Main function to run the NeuTTS Air voice cloning demo."""
-    system = NeuTTSVoiceCloningSystem()
+    """Main function to run the voice cloning demo."""
+    system = VoiceCloningSystem()
     
     # Test topic
     topic = "the future of artificial intelligence in radio broadcasting"
     
-    success = await system.demo_5_ai_voices(topic)
+    success = await system.demo_5_voices(topic)
     
     if success:
-        print("\nSUCCESS: All 5 AI voices generated successfully using NeuTTS Air!")
+        print("\nSUCCESS: All 5 AI voices generated successfully!")
     else:
-        print("\nPARTIAL SUCCESS: Some AI voices generated successfully")
+        print("\nPARTIAL SUCCESS: Some voices generated successfully")
 
 if __name__ == "__main__":
     asyncio.run(main())

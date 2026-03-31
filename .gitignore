@@ -35,18 +35,31 @@ env/
 .env.test.local
 .env.production.local
 
-# Audio Files
+# Audio Files (except samples)
 *.wav
 *.mp3
 *.m4a
 *.aac
 *.ogg
 *.flac
+# But keep sample files
+!neutts-air/samples/*.wav
+!neutts-air/samples/*.txt
 
 # Output Directories
 output/
 temp/
 tmp/
+
+# Model checkpoints
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Hugging Face cache
+.cache/
+models/
 
 # IDE
 .vscode/
